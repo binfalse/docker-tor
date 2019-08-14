@@ -1,21 +1,24 @@
-# synology-tor-client-minimal
+# Tor in a Docker Jail
 
-Tor client (Socks proxy ) version 0.2.6.10 - 12MB image - Tor client image qualified for Docker on Synology NAS. This Docker image launch a Tor client with a Socks proxy on port 9150 (SocksPort 0.0.0.0:9150).
+This is a Tor client (SOCKS proxy), it will open a SOCKS gate at `:9050`.
 
-### Versions
+## Usage
 
-OS : Alpine Linux 3.2 - [http://alpinelinux.org](http://alpinelinux.org) - Alpine Linux is a security-oriented, lightweight Linux distribution based on musl libc and busybox.
+Just spawn a container and forward a host's port into the container at `:9050`, eg.:
 
-Tor : version 0.2.6.10
+    docker run --rm -p 127.0.0.1:1234:9050 binfalse/tor
 
-### Install
+This binds the container's `:9050` to the localhost's `:1234`. You should now be able to access it, eg. using `curl`:
 
-1. In the Synology NAS admin interface, launch Docker package
-2. In the registry tab, search for the image (search for "tor client") and double click to download
-3. When the download is finished, in the image tab, select the tor-client image and launch to create the container.
-4. Choose a container name and add port settings : local port (9150) and container port (9150)
-5. Click "Next" and adjust ressource limitation if you want. Click "Next" then click "Apply"
-6. Launch the container.
-7. To use, configure your browser/client to use a SOCKS server with the IP of the NAS and server port: 9150. (Use TorBrowser and change connection settings in preferences panel)
-8. Your Tor client is running.
+    curl --socks5 localhost:1234 https://ip.binfalse.de
+
+## Modify Tor Settings
+
+The default configuration is copied into the image at compile time, it can be found at [the GitHub repository binfalse/docker-tor:torrc](https://github.com/binfalse/docker-tor/blob/master/torrc).
+
+However, you're free to override the settings with your preferences.
+Just mount (`-v`) your own `torrc` (eg `/path/to/your/torrc`) on top of the shipped one:
+
+    docker run --rm -v /path/to/your/torrc:/etc/tor/torrc -p 127.0.0.1:1234:9050 binfalse/tor
+
 
