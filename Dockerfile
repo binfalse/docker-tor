@@ -3,11 +3,12 @@ FROM alpine:latest
 RUN apk update \
  && apk upgrade \
  && apk add tor \
- && rm /var/cache/apk/*
+ && rm /var/cache/apk/* \
+ && chmod 700 /var/lib/tor
 
 EXPOSE 9050
 
 ADD ./torrc /etc/tor/torrc
+ADD startscript.sh /startscript.sh
 
-USER tor
-CMD /usr/bin/tor -f /etc/tor/torrc
+CMD /startscript.sh
